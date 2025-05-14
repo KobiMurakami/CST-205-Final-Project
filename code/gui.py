@@ -155,6 +155,21 @@ class ImageEditor(QWidget):
         resetBtn.clicked.connect(self.resetImage)
         self.controlsPanel.addRow(self.centerWidget(resetBtn))
 
+        flipLayout = QHBoxLayout()
+        self.leftFlipBtn = QPushButton("←")
+        self.leftFlipBtn.setFixedSize(40, 40)
+        self.leftFlipBtn.clicked.connect(lambda: self.flipImage("left"))
+
+        self.rightFlipBtn = QPushButton("→")
+        self.rightFlipBtn.setFixedSize(40, 40)
+        self.rightFlipBtn.clicked.connect(lambda: self.flipImage("right"))
+
+        flipLayout.addWidget(self.leftFlipBtn)
+        flipLayout.addWidget(self.rightFlipBtn)
+        flipWrapper = QWidget()
+        flipWrapper.setLayout(flipLayout)
+        self.controlsPanel.addRow("Flip:", flipWrapper)
+
         controlsGroup = QGroupBox("Image Controls")
         controlsGroup.setLayout(self.controlsPanel)
         leftLayout.addWidget(controlsGroup)
@@ -298,6 +313,18 @@ class ImageEditor(QWidget):
             if fileName:
                 resized = self.editedImage.resize((self.widthSpin.value(), self.heightSpin.value()))
                 resized.save(fileName)
+
+    def flipImage(self, direction):
+        if not self.editedImage:
+            return
+        if direction == "left":
+            self.editedImage = self.editedImage.rotate(90, expand=True)
+        elif direction == "right":
+            self.editedImage = self.editedImage.rotate(-90, expand=True)
+        w, h = self.editedImage.size
+        self.widthSpin.setValue(w)
+        self.heightSpin.setValue(h)
+        self.updateImageDisplay()
 
 
 if __name__ == "__main__":
